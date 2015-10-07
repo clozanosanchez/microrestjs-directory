@@ -1,0 +1,100 @@
+{
+	"microrestSpecification": 1,
+	"info": {
+		"name": "microrestjs-directory",
+		"version": "0.3.0",
+		"api": 1,
+		"description": "Service Directory for Microrestjs",
+		"keywords": ["directory", "registry", "Microrestjs"],
+		"date": "2015-08-01",
+		"authors": [
+			{
+				"name": "Carlos Lozano Sánchez",
+			 	"email": "carloslozano@freshhy.com",
+			 	"url": "https://www.linkedin.com/in/clozanosanchez"
+			}
+		],
+		"homepage": "https://git.rhrk.uni-kl.de/sanchezc/microrestjs-directory",
+		"repository": {
+			"type": "git",
+			"url": "https://git.rhrk.uni-kl.de/sanchezc/microrestjs-directory.git"
+		}
+	},
+
+	"config": {
+		"location": "directory"
+	},
+
+	"security": {
+		"scheme": "none"
+	},
+
+	"operations": {
+		"register": {
+			"request": { 
+				"path": "/register",
+				"method": "POST",
+				"body": {
+					"serviceContext": {
+						"type": "object"
+					},
+
+					"certificate": {
+						"type": "string"
+					}
+				}
+			},
+
+			"responses": {
+				"OK": {
+					"statusCode": 200,
+					"description": "The service has been registered successfully"
+				}
+			},
+
+			"errors": {
+				"BAD_REQUEST": {
+					"statusCode": 400,
+					"description": "The request is not valid"
+				}
+			}
+		},
+
+		"lookup": {
+			"request": { 
+				"path": "/lookup/:serviceName/:api",
+				"method": "GET",
+				"parameters": {
+					"serviceName": {
+						"in": "path",
+						"description": "Name of the service that is looked up",
+						"required": true,
+						"type": "string"
+					},
+
+					"api": {
+						"in": "path",
+						"description": "API number of the service that is looked up",
+						"required": true,
+						"type": "integer"
+					}
+				},
+				"body": {}
+			},
+
+			"responses": {
+				"OK": {
+					"statusCode": 200,
+					"description": "The service has been found"
+				}
+			},
+
+			"errors": {
+				"NOT_FOUND": {
+					"statusCode": 404,
+					"description": "The service has not been found"
+				}
+			}
+		}
+	}
+}
