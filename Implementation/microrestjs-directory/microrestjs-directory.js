@@ -93,13 +93,18 @@ module.exports.lookup = function lookup(request, response, sendResponse) {
 
     var _this = this;
     var callableService = services.shift();
+    services.push(callableService);
+
     _checkAvailability(callableService, function _checkAvailabilityCallback(isAvailable) {
         if(isAvailable === false) {
+            _this.registeredServices[serviceIdentificationName] = _this.registeredServices[serviceIdentificationName].filter(function (element, index, array) {
+                return element !== callableService;
+            });
+
             _this.lookup(request, response, sendResponse);
             return;
         }
 
-        services.push(callableService);
         response.setStatus(200).setBody(callableService);
         sendResponse();
     });
