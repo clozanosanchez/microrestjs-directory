@@ -2,7 +2,7 @@
 	"microrestSpecification": 1,
 	"info": {
 		"name": "microrestjs-directory",
-		"version": "0.3.0",
+		"version": "0.3.1",
 		"api": 1,
 		"description": "Service Directory for Microrestjs",
 		"keywords": ["directory", "registry", "Microrestjs"],
