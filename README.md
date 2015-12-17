@@ -1,4 +1,4 @@
 microrestjs-directory
 =====================
 
-Official service directory for microrest.js framework.
+Official service directory for Microrestjs Framework.
