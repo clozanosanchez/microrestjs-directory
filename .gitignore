@@ -23,9 +23,6 @@ coverage
 # Documentation
 jsdoc
 
-# Services Folder
-services
-
 # Sublime Projects & Workspace
 *.sublime-project
 *.sublime-workspace
