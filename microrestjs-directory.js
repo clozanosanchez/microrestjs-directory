@@ -5,11 +5,11 @@
  *
  * @author Carlos Lozano Sánchez
  * @license MIT
- * @copyright 2015 Carlos Lozano Sánchez
+ * @copyright 2015-2016 Carlos Lozano Sánchez
  */
 
-var checkTypes = require('check-types');
-var https = require('https');
+const checkTypes = require('check-types');
+const https = require('https');
 
 /**
  * Initializes the service directory.
@@ -22,7 +22,7 @@ module.exports.onCreateService = function onCreateService() {
 
 /**
  * Destroys the service directory.
- * 
+ *
  * @override
  */
 module.exports.onDestroyService = function onDestroyService() {
@@ -35,38 +35,38 @@ module.exports.onDestroyService = function onDestroyService() {
  * NOTE: Service Operation.
  */
 module.exports.register = function register(request, response, sendResponse) {
-    var requestBody = request.getBody();
+    const requestBody = request.getBody();
     if (checkTypes.not.object(requestBody) || checkTypes.emptyObject(requestBody)) {
         response.setStatus(400);
         sendResponse();
         return;
     }
 
-    var info = requestBody.info;
+    const info = requestBody.info;
     if (checkTypes.not.object(info) || checkTypes.emptyObject(info) ||
-        checkTypes.not.string(info.name) || checkTypes.not.unemptyString(info.name) ||
-        checkTypes.not.integer(info.api) || checkTypes.not.positive(info.api)){
+        checkTypes.not.string(info.name) || checkTypes.emptyString(info.name) ||
+        checkTypes.not.integer(info.api) || checkTypes.not.positive(info.api)) {
         response.setStatus(400);
         sendResponse();
         return;
     }
 
-    var port = requestBody.port;
-    if (checkTypes.not.integer(port) || checkTypes.negative(port) || port > 65535){
+    const port = requestBody.port;
+    if (checkTypes.not.integer(port) || checkTypes.not.inRange(port, 1, 65535)) {
         response.setStatus(400);
         sendResponse();
         return;
     }
 
-    var service = {
+    const service = {
         info: info,
         location: request.getIp(),
         port: port
     };
 
-    var serviceIdentificationName = service.info.name + '/v' + service.info.api;
+    const serviceIdentificationName = `${service.info.name}/v${service.info.api}`;
 
-    var sameServices = this.registeredServices[serviceIdentificationName] || [];
+    const sameServices = this.registeredServices[serviceIdentificationName] || [];
 
     sameServices.push(service);
 
@@ -82,31 +82,27 @@ module.exports.register = function register(request, response, sendResponse) {
  * NOTE: Service Operation.
  */
 module.exports.lookup = function lookup(request, response, sendResponse) {
-    var serviceIdentificationName = request.getPathParameter('serviceName') + '/v' + request.getPathParameter('api');
+    const serviceIdentificationName = `${request.getPathParameter('serviceName')}/v${request.getPathParameter('api')}`;
 
-    var services = this.registeredServices[serviceIdentificationName];
-    if (checkTypes.not.assigned(services) || checkTypes.not.array(services) || checkTypes.emptyArray(services)) {
+    const services = this.registeredServices[serviceIdentificationName];
+    if (checkTypes.not.array(services) || checkTypes.emptyArray(services)) {
         response.setStatus(404);
         sendResponse();
         return;
     }
 
-    var _this = this;
-    var callableService = services.shift();
+    const callableService = services.shift();
     services.push(callableService);
 
-    _checkAvailability(callableService, function _checkAvailabilityCallback(isAvailable) {
-        if(isAvailable === false) {
-            _this.registeredServices[serviceIdentificationName] = _this.registeredServices[serviceIdentificationName].filter(function (element, index, array) {
-                return element !== callableService;
-            });
-
-            _this.lookup(request, response, sendResponse);
-            return;
-        }
-
+    _checkAvailability(callableService).then(() => {
         response.setStatus(200).setBody(callableService);
         sendResponse();
+    }).catch(() => {
+        this.registeredServices[serviceIdentificationName] = this.registeredServices[serviceIdentificationName].filter((element) => {
+            return element !== callableService;
+        });
+
+        this.lookup(request, response, sendResponse);
     });
 };
 
@@ -116,34 +112,29 @@ module.exports.lookup = function lookup(request, response, sendResponse) {
  * @private
  * @function
  * @param {Object} callableService - CallableService to be checked.
- * @param {checkAvailabilityCallback} checkAvailabilityCallback - Callback for delegating the result of checking the service availability.
+ * @returns {Promise} - Promise that resolves if the service is available and rejects if the service is not available.
  */
-function _checkAvailability(callableService, checkAvailabilityCallback) {
-    var options = {
-        hostname: callableService.location,
-        port: callableService.port,
-        path: '/' + callableService.info.name + '/v' + callableService.info.api + '/',
-        rejectUnauthorized: false,
-        checkServerIdentity: function _checkServerIdentity(host, cert) {
-            //The host of the server is not checked.
-            //Avoid localhost problems
-        }
-    };
+function _checkAvailability(callableService) {
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: callableService.location,
+            port: callableService.port,
+            path: `/${callableService.info.name}/v${callableService.info.api}/`,
+            rejectUnauthorized: false,
+            checkServerIdentity: function _checkServerIdentity(host, cert) {
+                // The host of the server is not checked.
+                // Avoid localhost problems
+            }
+        };
 
-    https.get(options, function _responseCallback(response) {
-        if (response.statusCode === 200) {
-            checkAvailabilityCallback(true);
-        } else {
-            checkAvailabilityCallback(false);
-        }
-    }).on('error', function _errorCallback(error) {
-        checkAvailabilityCallback(false);
+        https.get(options, (response) => {
+            if (response.statusCode === 200) {
+                resolve();
+            } else {
+                reject();
+            }
+        }).on('error', () => {
+            reject();
+        });
     });
 }
-
-/**
- * Callback declaration for delegating the result of checking the service availability.
- *
- * @callback checkAvailabilityCallback
- * @param {Boolean} isAvailable - true, if the service is available; false, otherwise;
- */

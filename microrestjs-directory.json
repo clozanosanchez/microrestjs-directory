@@ -2,23 +2,24 @@
 	"microrestSpecification": 1,
 	"info": {
 		"name": "microrestjs-directory",
-		"version": "0.3.1",
+		"version": "0.5.0",
 		"api": 1,
-		"description": "Service Directory for Microrestjs",
-		"keywords": ["directory", "registry", "Microrestjs"],
-		"date": "2015-08-01",
+		"description": "Official service directory for Microrestjs",
+		"keywords": ["directory", "registry", "microservice", "service", "microrest", "Microrestjs"],
+		"date": "2016-05-18",
 		"authors": [
 			{
 				"name": "Carlos Lozano Sánchez",
-			 	"email": "carloslozano@freshhy.com",
+			 	"email": "clozanosanchez91@gmail.com",
 			 	"url": "https://www.linkedin.com/in/clozanosanchez"
 			}
 		],
-		"homepage": "https://git.rhrk.uni-kl.de/sanchezc/microrestjs-directory",
+		"homepage": "https://github.com/clozanosanchez/microrestjs-directory",
 		"repository": {
 			"type": "git",
-			"url": "https://git.rhrk.uni-kl.de/sanchezc/microrestjs-directory.git"
-		}
+			"url": "https://github.com/clozanosanchez/microrestjs-directory.git"
+		},
+		"license": "MIT"
 	},
 
 	"config": {

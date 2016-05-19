@@ -1,0 +1,30 @@
+{
+  "name": "microrestjs-directory",
+  "description": "Official service directory for Microrestjs",
+  "version": "0.5.0",
+  "author": "Carlos Lozano Sánchez <clozanosanchez91@gmail.com>",
+  "license": "MIT",
+  "repository": "clozanosanchez/microrestjs-directory",
+  "homepage": "https://github.com/clozanosanchez/microrestjs-directory",
+  "keywords": [
+    "directory",
+    "registry",
+    "microservice",
+    "service",
+    "microrest",
+    "Microrestjs"
+  ],
+  "dependencies": {
+    "check-types": "7.0.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "files": [
+    "LICENSE",
+    "History.md",
+    "README.md",
+    "microrest-directory.js",
+    "microrest-directory.json"
+  ]
+}
